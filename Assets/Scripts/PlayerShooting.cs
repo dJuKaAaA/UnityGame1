@@ -11,8 +11,11 @@ public class PlayerShooting : MonoBehaviour
     private void Update() 
     {
         Vector3 screenPosition = Input.mousePosition;
-        _aimDirectionService.UpdateDirections(screenPosition, transform.position, _currentWeapon.Range);
-        _currentWeapon.transform.rotation = Quaternion.LookRotation(_aimDirectionService.TargetDirection);
+        screenPosition.z = Camera.main.nearClipPlane + 1;
+        Ray cameraToMouseRay = Camera.main.ScreenPointToRay(screenPosition);
+
+        _aimDirectionService.UpdateDirections(cameraToMouseRay, _currentWeapon.GetMuzzlePosition(), _currentWeapon.Range);
+        _currentWeapon.transform.rotation = Quaternion.LookRotation(_aimDirectionService.TargetPosition - transform.position);
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             _currentWeapon.Shoot(_aimDirectionService.TargetDirection);

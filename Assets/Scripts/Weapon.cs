@@ -8,6 +8,8 @@ public class Weapon : MonoBehaviour
     [SerializeField] private float _range = 100f;
     public float Range => _range;
     private float _bulletVelocity = 100f;
+    private float _damage = 10f;
+    public float Damage => _damage;
     
     private void Start() 
     {
@@ -24,5 +26,10 @@ public class Weapon : MonoBehaviour
     {
         var particleMainSettings = _bulletParticles.main;
         particleMainSettings.startSpeed = _bulletVelocity;
+    }
+
+    public Vector3 GetMuzzlePosition()
+    {
+        return _bulletParticles.transform.position;
     }
 }
