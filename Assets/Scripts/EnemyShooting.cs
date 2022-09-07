@@ -9,12 +9,13 @@ public class EnemyShooting : MonoBehaviour
     [SerializeField] private float _shootingCooldown = 1f;
     [SerializeField] private float _aimOffset = 2f;
     private bool _canShoot = true;
-    private AimDirectionService _aimDirectionService = new AimDirectionService();
+    private AimDirectionService _aimDirectionService;
     private EnemyAI _ai;
 
 
     private void Start() 
     {
+        _aimDirectionService = new AimDirectionService(transform);
         _ai = GetComponent<EnemyAI>();
     }
 

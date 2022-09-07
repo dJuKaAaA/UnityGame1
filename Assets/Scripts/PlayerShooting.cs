@@ -6,7 +6,12 @@ using UnityEngine;
 public class PlayerShooting : MonoBehaviour
 {
     [SerializeField] Weapon _currentWeapon;
-    private AimDirectionService _aimDirectionService = new AimDirectionService();
+    private AimDirectionService _aimDirectionService;
+
+    private void Start() 
+    {
+        _aimDirectionService = new AimDirectionService(transform);
+    }
 
     private void Update() 
     {
