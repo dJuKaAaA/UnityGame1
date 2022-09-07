@@ -6,9 +6,9 @@ public class Weapon : MonoBehaviour
 {
     [SerializeField] private ParticleSystem _bulletParticles;
     [SerializeField] private float _range = 100f;
-    private float _bulletVelocity = 100f;
     public float Range => _range;
-
+    private float _bulletVelocity = 100f;
+    
     private void Start() 
     {
         SetBulletSpeed();
