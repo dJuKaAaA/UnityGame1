@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerShooting : MonoBehaviour
 {
     [SerializeField] Weapon _currentWeapon;
+    
     private AimDirectionService _aimDirectionService;
 
     private void Start() 
@@ -21,7 +22,7 @@ public class PlayerShooting : MonoBehaviour
 
         _aimDirectionService.UpdateDirections(cameraToMouseRay, _currentWeapon.GetMuzzlePosition(), _currentWeapon.Range);
         _currentWeapon.transform.rotation = Quaternion.LookRotation(_aimDirectionService.TargetPosition - transform.position);
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKey(KeyCode.Mouse0))
         {
             _currentWeapon.Shoot(_aimDirectionService.TargetDirection);
         }

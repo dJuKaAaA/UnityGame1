@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,12 +11,17 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("When player is in the air, velocity is divided by this value and returned to normal when grounded")]
     [SerializeField] private float _inAirVelocityPenatly = 2.5f;  // decreases the velocity so the player can't move fast while in air
     
-    private Rigidbody rb;
+
+    private Rigidbody _rigidbody;
+    private PlayerRoll _playerRoll;
     private bool _inAir = false;
+    public bool InAir => _inAir;
+    
 
     private void Start() 
     {
-        rb = GetComponent<Rigidbody>();
+        _rigidbody = GetComponent<Rigidbody>();
+        _playerRoll = GetComponent<PlayerRoll>();
     } 
 
     private void Update()
@@ -26,32 +32,31 @@ public class PlayerMovement : MonoBehaviour
 
     private void GenerateMovement()
     {
-        // ensures that the movement speed isn't larger than _maxMovementSpeed
-        if (Vector3.Magnitude(rb.GetRelativePointVelocity(Vector3.zero)) > _maxMovementSpeed) { return; }
+        if (_playerRoll.IsRolling) { return; }
 
-        Vector3 movementVector = Vector3.zero;
+        // ensures that the movement speed isn't larger than _maxMovementSpeed
+        if (Vector3.Magnitude(_rigidbody.velocity) > _maxMovementSpeed) { return; }
+
+        Vector3 movementDirection = Vector3.zero;
         if (Input.GetKey(KeyCode.A))
         {
-            movementVector.x = -1;
+            movementDirection.x = -1;
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            movementVector.x = 1;
+            movementDirection.x = 1;
         }
         if (Input.GetKey(KeyCode.W))
         {
-            movementVector.z = 1;
+            movementDirection.z = 1;
         }
         else if (Input.GetKey(KeyCode.S))
         {
-            movementVector.z = -1;
+            movementDirection.z = -1;
         }
-        movementVector = Vector3.Normalize(movementVector) * _velocity * Time.deltaTime;
+        movementDirection = Vector3.Normalize(movementDirection);
         
-        rb.AddRelativeForce(movementVector);
-
-        // Vector3 movementSpeedVector = rb.GetRelativePointVelocity(Vector3.zero);
-        // Debug.Log(movementSpeedVector);
+        _rigidbody.AddRelativeForce(movementDirection * _velocity * Time.deltaTime);
     }
 
     private void GenerateJumping()
@@ -60,7 +65,7 @@ public class PlayerMovement : MonoBehaviour
         {
             _velocity /= _inAirVelocityPenatly;
             _inAir = true;
-            rb.AddRelativeForce(Vector3.up * _jumpForce);
+            _rigidbody.AddRelativeForce(Vector3.up * _jumpForce);
         }
     }
 

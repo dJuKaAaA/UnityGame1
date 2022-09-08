@@ -6,10 +6,13 @@ public class Weapon : MonoBehaviour
 {
     [SerializeField] private ParticleSystem _bulletParticles;
     [SerializeField] private float _range = 100f;
+    [SerializeField] private float _shotCooldown = 0.5f;
+    
     public float Range => _range;
-    private float _bulletVelocity = 100f;
+    private float _bulletVelocity = 200f;
     private float _damage = 10f;
     public float Damage => _damage;
+    private bool _canShoot = true;
     
     private void Start() 
     {
@@ -18,8 +21,19 @@ public class Weapon : MonoBehaviour
 
     public void Shoot(Vector3 direction)
     {
+        if (_canShoot)
+        {
+            StartCoroutine(ShootingCorouotine(direction));
+        }
+    }
+
+    private IEnumerator ShootingCorouotine(Vector3 direction)
+    {
         _bulletParticles.transform.rotation = Quaternion.LookRotation(direction);
         _bulletParticles.Play();
+        _canShoot = false;
+        yield return new WaitForSeconds(_shotCooldown);
+        _canShoot = true;
     }
     
     private void SetBulletSpeed()
