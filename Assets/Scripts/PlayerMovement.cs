@@ -5,37 +5,49 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private float _maxMovementSpeed = 10f; 
-    [SerializeField] private float _velocity = 500f;
+    [SerializeField] private float _maxMovementSpeed = 10f;
     [SerializeField] private float _jumpForce = 500f;
-    [Tooltip("When player is in the air, velocity is divided by this value and returned to normal when grounded")]
-    [SerializeField] private float _inAirVelocityPenatly = 2.5f;  // decreases the velocity so the player can't move fast while in air
-    
+    [SerializeField] private float _regularVelocity = 700f;
+    [SerializeField] private float _inAirVelocity = 200f;
 
     private Rigidbody _rigidbody;
     private PlayerRoll _playerRoll;
     private bool _inAir = false;
-    public bool InAir => _inAir;
+    public bool InAir => _inAir; 
+    private float _velocity;
     
 
     private void Start() 
     {
         _rigidbody = GetComponent<Rigidbody>();
         _playerRoll = GetComponent<PlayerRoll>();
-    } 
+        _velocity = _regularVelocity;
+    }
 
     private void Update()
     {
-        GenerateMovement();
-        GenerateJumping();
+        HandleMovement();
+        HandleJumping();
+        if (!_inAir)
+        {
+            _velocity = _regularVelocity;
+        }
+        else 
+        {
+            _velocity = _inAirVelocity;
+        }
     }
 
-    private void GenerateMovement()
+    private void HandleMovement()
     {
         if (_playerRoll.IsRolling) { return; }
 
         // ensures that the movement speed isn't larger than _maxMovementSpeed
-        if (Vector3.Magnitude(_rigidbody.velocity) > _maxMovementSpeed) { return; }
+        if (Vector3.Magnitude(_rigidbody.velocity) > _maxMovementSpeed) 
+        {
+            _rigidbody.velocity = Vector3.Normalize(_rigidbody.velocity) * _maxMovementSpeed;
+            return;
+        }
 
         Vector3 movementDirection = Vector3.zero;
         if (Input.GetKey(KeyCode.A))
@@ -59,21 +71,19 @@ public class PlayerMovement : MonoBehaviour
         _rigidbody.AddRelativeForce(movementDirection * _velocity * Time.deltaTime);
     }
 
-    private void GenerateJumping()
+    private void HandleJumping()
     {
-        if (!_inAir && Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && !_inAir && !_playerRoll.IsRolling)
         {
-            _velocity /= _inAirVelocityPenatly;
             _inAir = true;
             _rigidbody.AddRelativeForce(Vector3.up * _jumpForce);
         }
     }
 
-    private void OnCollisionEnter(Collision other) 
+    private void OnCollisionStay(Collision other) 
     {
         if (_inAir && other.gameObject.tag == "Platform")
         {
-            _velocity *= _inAirVelocityPenatly;
             _inAir = false;
         }
     }

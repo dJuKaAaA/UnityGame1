@@ -5,74 +5,76 @@ using UnityEngine;
 
 public class PlayerRoll : MonoBehaviour
 {
-    [SerializeField] private bool _isRolling = false;
     [SerializeField] private float _rollIntensity = 1000f;
     [SerializeField] private float _rollDuration = 1f;
-    [SerializeField] private float _maxSpeedWhileRolling = 10f; 
+    [SerializeField] private float _maxSpeedWhileRolling = 10f;
 
     private Rigidbody _rigidbody;
-    private CapsuleCollider _collider;
+    private Collider _collider;
     private PlayerMovement _playerMovement;
 
+    private bool _isRolling = false;
     public bool IsRolling => _isRolling;
     private Vector3 _rollVelocityVector;
-    private float _originalColliderRadius;
+    private float _originalColliderRadius; 
 
     private void Start() 
     {
         _rigidbody = GetComponent<Rigidbody>();
         _collider = GetComponent<CapsuleCollider>();
         _playerMovement = GetComponent<PlayerMovement>();
-        _originalColliderRadius = _collider.radius;
     }
 
     private void Update() 
     {
-        GenerateRoll();
+        HandleRoll();
     }
 
-    private void GenerateRoll()
+    private void HandleRoll()
     {
-        if (!_isRolling && Input.GetKeyDown(KeyCode.LeftShift) && !_playerMovement.InAir)
+        if (!_isRolling && Input.GetKeyDown(KeyCode.LeftControl) && !_playerMovement.InAir)
         {
-            StartCoroutine(RollCoroutine());
+            Vector3 rollDirection = Vector3.zero;
+            if (Input.GetKey(KeyCode.A))
+            {
+                rollDirection.x = -1;
+            }
+            else if (Input.GetKey(KeyCode.D))
+            {
+                rollDirection.x = 1;
+            }
+            if (Input.GetKey(KeyCode.W))
+            {
+                rollDirection.z = 1;
+            }
+            else if (Input.GetKey(KeyCode.S))
+            {
+                rollDirection.z = -1;
+            }
+            if (rollDirection != Vector3.zero)
+            {
+                StartCoroutine(RollCoroutine(rollDirection));
+            }
         }
         if (_isRolling)
         {
             if (Vector3.Magnitude(_rigidbody.velocity) > _maxSpeedWhileRolling) 
             {
                 _rigidbody.velocity = Vector3.Normalize(_rigidbody.velocity) * _maxSpeedWhileRolling;
-                return;
             }
-            _rigidbody.AddRelativeForce(_rollVelocityVector);
+            else 
+            {
+                _rigidbody.AddRelativeForce(_rollVelocityVector, ForceMode.VelocityChange);
+            }
         }
     }
 
-    private IEnumerator RollCoroutine()
+    private IEnumerator RollCoroutine(Vector3 rollDirection)
     {
         _isRolling = true;
-        _collider.radius = 0;
-        Vector3 rollDirection = Vector3.zero;
-        if (Input.GetKey(KeyCode.A))
-        {
-            rollDirection.x = -1;
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            rollDirection.x = 1;
-        }
-        if (Input.GetKey(KeyCode.W))
-        {
-            rollDirection.z = 1;
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            rollDirection.z = -1;
-        }
         rollDirection = Vector3.Normalize(rollDirection);
         _rollVelocityVector = rollDirection * _rollIntensity * Time.deltaTime;
         yield return new WaitForSeconds(_rollDuration);
         _isRolling = false;
-        _collider.radius = _originalColliderRadius;
     }
 }

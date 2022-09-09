@@ -163,9 +163,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _maxMovementSpeed: 10
-  _velocity: 500
   _jumpForce: 450
-  _inAirVelocityPenatly: 2.5
+  _regularVelocity: 700
+  _inAirVelocity: 200
 --- !u!114 &5399579353394030525
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -218,7 +218,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 147aa0cfe8f87394e96e1d637c3039cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rollIntensity: 3
+  _isRolling: 0
+  _rollIntensity: 50
+  _rollDuration: 0.25
+  _afterRollCooldownDuration: 0.75
+  _maxSpeedWhileRolling: 10
+  _afterRollVelocity: 2
+  _afterRollCooldown: 0
 --- !u!1001 &3000983211791376368
 PrefabInstance:
   m_ObjectHideFlags: 0
