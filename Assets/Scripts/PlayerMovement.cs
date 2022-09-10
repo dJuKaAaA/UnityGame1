@@ -8,34 +8,30 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _maxMovementSpeed = 10f;
     [SerializeField] private float _jumpForce = 500f;
     [SerializeField] private float _regularVelocity = 700f;
-    [SerializeField] private float _inAirVelocity = 200f;
+    
+    private float _inAirVelocity;
+    [SerializeField] private bool _inAir = false;
+    public bool InAir => _inAir; 
+    private float _velocity;
 
     private Rigidbody _rigidbody;
     private PlayerRoll _playerRoll;
-    private bool _inAir = false;
-    public bool InAir => _inAir; 
-    private float _velocity;
-    
+    private MeshRenderer _meshRenderer;    
 
     private void Start() 
     {
         _rigidbody = GetComponent<Rigidbody>();
         _playerRoll = GetComponent<PlayerRoll>();
+        _meshRenderer = GetComponentInChildren<MeshRenderer>();
         _velocity = _regularVelocity;
+        _inAirVelocity = _regularVelocity / 2;
     }
 
     private void Update()
     {
         HandleMovement();
         HandleJumping();
-        if (!_inAir)
-        {
-            _velocity = _regularVelocity;
-        }
-        else 
-        {
-            _velocity = _inAirVelocity;
-        }
+        HandleAirMovementPenalty();
     }
 
     private void HandleMovement()
@@ -80,7 +76,19 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void OnCollisionStay(Collision other) 
+    private void HandleAirMovementPenalty()
+    {
+        if (!_inAir)
+        {
+            _velocity = _regularVelocity;
+        }
+        else
+        {
+            _velocity = _inAirVelocity;
+        }
+    }
+
+    private void OnCollisionEnter(Collision other) 
     {
         if (_inAir && other.gameObject.tag == "Platform")
         {
@@ -92,7 +100,10 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!_inAir && other.gameObject.tag == "Platform")
         {
-            _inAir = true;
+            if (_rigidbody.velocity.y < 0)  // if gravity is moving the object down
+            {
+                _inAir = true;
+            }
         }
     }
 }
