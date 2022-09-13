@@ -5,12 +5,13 @@ using UnityEngine;
 public class Weapon : MonoBehaviour
 {
     [SerializeField] private ParticleSystem _bulletParticles;
+    [SerializeField] private ParticleSystem _muzzleFlashParticles;
     [SerializeField] private float _range = 100f;
     [SerializeField] private float _shotCooldown = 0.5f;
+    [SerializeField] private float _damage = 10f;
     
     public float Range => _range;
-    private float _bulletVelocity = 200f;
-    private float _damage = 10f;
+    private float _bulletVelocity = 1000f;
     public float Damage => _damage;
     private bool _canShoot = true;
     
@@ -29,8 +30,14 @@ public class Weapon : MonoBehaviour
 
     private IEnumerator ShootingCorouotine(Vector3 direction)
     {
-        _bulletParticles.transform.rotation = Quaternion.LookRotation(direction);
+        // placeholder solution
+        if (direction != Vector3.zero)
+        {
+            _bulletParticles.transform.rotation = Quaternion.LookRotation(direction);
+        }
+        
         _bulletParticles.Play();
+        _muzzleFlashParticles.Play();
         _canShoot = false;
         yield return new WaitForSeconds(_shotCooldown);
         _canShoot = true;

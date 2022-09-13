@@ -14,7 +14,7 @@ public class EnemyShooting : MonoBehaviour
 
     private void Start() 
     {
-        _aimDirectionService = new AimDirectionService(transform);
+        _aimDirectionService = new AimDirectionService();
         _ai = GetComponent<EnemyAI>();
     }
 

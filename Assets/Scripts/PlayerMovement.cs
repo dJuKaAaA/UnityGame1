@@ -10,21 +10,22 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _regularVelocity = 700f;
     
     private float _inAirVelocity;
-    [SerializeField] private bool _inAir = false;
+    private bool _inAir = false;
     public bool InAir => _inAir; 
-    private float _velocity;
+    [SerializeField] private float _velocity;
 
     private Rigidbody _rigidbody;
     private PlayerRoll _playerRoll;
-    private MeshRenderer _meshRenderer;    
 
     private void Start() 
     {
         _rigidbody = GetComponent<Rigidbody>();
         _playerRoll = GetComponent<PlayerRoll>();
-        _meshRenderer = GetComponentInChildren<MeshRenderer>();
+
         _velocity = _regularVelocity;
         _inAirVelocity = _regularVelocity / 2;
+        
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Update()
