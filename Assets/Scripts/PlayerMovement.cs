@@ -12,15 +12,17 @@ public class PlayerMovement : MonoBehaviour
     private float _inAirVelocity;
     private bool _inAir = false;
     public bool InAir => _inAir; 
-    [SerializeField] private float _velocity;
+    private float _velocity;
 
     private Rigidbody _rigidbody;
     private PlayerRoll _playerRoll;
+    private Animator _animator;
 
     private void Start() 
     {
         _rigidbody = GetComponent<Rigidbody>();
         _playerRoll = GetComponent<PlayerRoll>();
+        _animator = GetComponent<Animator>();
 
         _velocity = _regularVelocity;
         _inAirVelocity = _regularVelocity / 2;
@@ -31,6 +33,7 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         HandleMovement();
+        HandleMovementAnimation();
         HandleJumping();
         HandleAirMovementPenalty();
     }
@@ -66,6 +69,11 @@ public class PlayerMovement : MonoBehaviour
         movementDirection = Vector3.Normalize(movementDirection);
         
         _rigidbody.AddRelativeForce(movementDirection * _velocity * Time.deltaTime);
+    }
+
+    private void HandleMovementAnimation()
+    {
+        _animator.SetBool("IsMoving", _rigidbody.velocity != Vector3.zero);
     }
 
     private void HandleJumping()

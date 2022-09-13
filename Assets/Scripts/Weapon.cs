@@ -11,7 +11,7 @@ public class Weapon : MonoBehaviour
     [SerializeField] private float _damage = 10f;
     
     public float Range => _range;
-    private float _bulletVelocity = 1000f;
+    private float _bulletVelocity = 500f;
     public float Damage => _damage;
     private bool _canShoot = true;
     
