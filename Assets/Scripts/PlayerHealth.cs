@@ -27,7 +27,7 @@ public class PlayerHealth : MonoBehaviour
     private void TakeDamage(float damage)
     {
         _currentHealth -= damage;
-        _healthSlider.value -= damage;
+        _healthSlider.value = _currentHealth;
         if (_currentHealth <= 0)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);

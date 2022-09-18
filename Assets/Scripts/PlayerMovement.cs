@@ -8,34 +8,49 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _maxMovementSpeed = 10f;
     [SerializeField] private float _jumpForce = 500f;
     [SerializeField] private float _regularVelocity = 700f;
-    
+    [SerializeField] private Transform _followObject;
+    [SerializeField] private Animator _animator;
+
     private float _inAirVelocity;
     private bool _inAir = false;
     public bool InAir => _inAir; 
-    private float _velocity;
+    [SerializeField] private float _velocity;
 
     private Rigidbody _rigidbody;
     private PlayerRoll _playerRoll;
-    private Animator _animator;
-
+    
     private void Start() 
     {
         _rigidbody = GetComponent<Rigidbody>();
         _playerRoll = GetComponent<PlayerRoll>();
-        _animator = GetComponent<Animator>();
 
         _velocity = _regularVelocity;
-        _inAirVelocity = _regularVelocity / 2;
+        _inAirVelocity = _regularVelocity / 5;
         
         Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Update()
     {
+        RotateToCamera();
         HandleMovement();
         HandleMovementAnimation();
         HandleJumping();
         HandleAirMovementPenalty();
+    }
+
+    private void RotateToCamera()
+    {
+        transform.localEulerAngles = new Vector3(
+            transform.localEulerAngles.x,
+            transform.localEulerAngles.y + _followObject.localEulerAngles.y,
+            transform.localEulerAngles.z
+        );
+        _followObject.localEulerAngles = new Vector3(
+            _followObject.localEulerAngles.x,
+            0,
+            _followObject.localEulerAngles.z
+        );
     }
 
     private void HandleMovement()
@@ -68,7 +83,7 @@ public class PlayerMovement : MonoBehaviour
         }
         movementDirection = Vector3.Normalize(movementDirection);
         
-        _rigidbody.AddRelativeForce(movementDirection * _velocity * Time.deltaTime);
+        _rigidbody.AddRelativeForce(movementDirection * _velocity * Time.deltaTime, ForceMode.VelocityChange);
     }
 
     private void HandleMovementAnimation()

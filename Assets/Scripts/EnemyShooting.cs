@@ -8,13 +8,11 @@ public class EnemyShooting : MonoBehaviour
     [SerializeField] private Weapon _weapon;
     [SerializeField] private float _aimOffset = 2f;
     
-    private AimDirectionService _aimDirectionService;
     private EnemyAI _ai;
 
 
     private void Start() 
     {
-        _aimDirectionService = new AimDirectionService();
         _ai = GetComponent<EnemyAI>();
     }
 
@@ -22,16 +20,14 @@ public class EnemyShooting : MonoBehaviour
     {
         if (_ai.Provoked)
         {
-            Ray toTargetRay = new Ray(transform.position, GetAimOffsetTargetDirection());
-            _aimDirectionService.UpdateDirections(toTargetRay, _weapon.GetMuzzlePosition(), _ai.AggroRange);
             _weapon.transform.rotation = Quaternion.LookRotation(_target.position - transform.position);  // looks at direction of target
-            _weapon.Shoot(_aimDirectionService.TargetDirection);
+            _weapon.Shoot(GetTargetDirectionWithOffset());
         }
     }
 
-    private Vector3 GetAimOffsetTargetDirection()
+    private Vector3 GetTargetDirectionWithOffset()
     {
-        Vector3 targetDirection = _target.position - transform.position;
+        Vector3 targetDirection = _target.position - _weapon.GetMuzzlePosition();
         targetDirection.x += Random.Range(-_aimOffset, _aimOffset);
         targetDirection.y += Random.Range(-_aimOffset, _aimOffset);
         targetDirection.z += Random.Range(-_aimOffset, _aimOffset);
